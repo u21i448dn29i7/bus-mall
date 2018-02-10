@@ -1,5 +1,5 @@
 'use strict';
-// debugger;
+debugger;
 
 //////////////////////////////////////////////////////////////////
 //
@@ -34,7 +34,6 @@ function uuidv4() {
 function displayThreeRandomProducts() {
   roundNum += 1;
   if (roundNum <= rounds) {
-
     // delete the div at the end with id "roundCounter"
     // add another div with a new "roundCounter"
     var roundCounter = document.getElementById('roundCounter');
@@ -48,17 +47,38 @@ function displayThreeRandomProducts() {
     var roundText = document.createTextNode('Round ' + roundNum + ' of ' + rounds + '.'); 
     p.appendChild(roundText);
     roundCounter.appendChild(p);
-
     survey.appendChild(roundCounter);
-    
+
+
+    // start with the copy of the full product array then
+    // remove the products from the previous round.
+    var availableProducts = Product.allProducts.slice();
+
+    for (var pr = 0; pr < previousRound.length; pr++) {
+      var index = availableProducts.indexOf(previousRound[pr]);
+      availableProducts.splice(index, 1);
+      console.log('availableProductsArray: ' + availableProducts);
+    }
+
+    previousRound = [];
+    // pick three images, remove the selected image from this round.
     for (var i = 1; i <= 3; i++) {
       var imageElementId = document.getElementById('image' + i);
-      var randomIndex = Math.floor(Math.random() * Product.allProducts.length);
-      imageElementId.src = Product.allProducts[randomIndex].filepath;
+
+      var randomIndex = Math.floor(Math.random() * availableProducts.length);
+      imageElementId.src = availableProducts[randomIndex].filepath;
+      previousRound.push(availableProducts[randomIndex]);
+      availableProducts.splice(randomIndex,1);
     }
+
   } else {
     alert('end of survey');
   }
+}
+
+
+recordSelect(e) {
+  
 }
 
 
@@ -79,6 +99,8 @@ var releaseTheHounds = document.getElementById('releaseTheHounds');
 Product.allProducts = [];
 //Survey response objects
 Survey.allSurveys = [];
+// Previous round array. Will contain three objects.
+var previousRound = [];
 
 const rounds = 4;
 var roundNum = 0;
@@ -116,7 +138,7 @@ releaseTheHounds.addEventListener('click', function (e) {
 for (var i = 1; i <= 3; i++) {
   var imageElementId = document.getElementById('image' + i);
   imageElementId.addEventListener ('click', function(e){
-    // recordSelection();
+    recordSelection(e);
     displayThreeRandomProducts();
   });
 }
@@ -129,7 +151,7 @@ for (var i = 1; i <= 3; i++) {
 //Product constructor function
 function Product(filepath) {
     this.filepath = filepath;
-    this.ProductId = uuidv4();
+    this.productId = uuidv4();
     Product.allProducts.push(this);
 }
 

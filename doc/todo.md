@@ -11,6 +11,7 @@ The objective here is to create a functional "comprehensive" that will be used t
 ~~add some boilerplate html to the prestart section. a form, some yadda yadda text~
 ~~add some javascript to hide the prestart and display the survey sections~~
 ~~add some javascript for the "links" in the header since we won't be using any anchors~~
+add random function to select three images to conform to specifications
 
 ## Add the form to the researcher prestart section
 

@@ -2,15 +2,15 @@
 
 ## Basic configuration
 
-The objective here is to create a functional "comprehensive" that will be used to further rapid prototyping.
+The objective here is to create a functional "comprehensive" that will be used to further rapid prototyping and iteration.
 
 ~~start with an empty framework (201n10-Framework)~~
 ~~add a basic header and main~~
 ~~add two sections, one for the survey and one for the prestart instructions~~
-~~add 3 images (not random) to the survey and style to with cookie-stand shop theme.~~
-~~add some boilerplate html to the prestart section. a form, some lorem ipsum~~
+~~add 3 images (not random) to the survey and style to with approximate cookie-stand shop page theme.~~
+~~add some boilerplate html to the prestart section. a form, some yadda yadda text~
 ~~add some javascript to hide the prestart and display the survey sections~~
-~~add some javascript for the "links" in the header~~
+~~add some javascript for the "links" in the header since we won't be using any anchors~~
 
 ## Add the form to the researcher prestart section
 

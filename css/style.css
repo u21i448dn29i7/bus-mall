@@ -23,7 +23,8 @@ ul {
 
 ul li:hover {
     background: #1c1c1c;
-    color: hotpink;  /* or whatever colour you want */
+    color: hotpink;
+    /* or whatever colour you want */
 }
 
 #prestart {
@@ -72,4 +73,10 @@ ul li:hover {
 
 #survey img {
     width: 100%;
+}
+
+#roundCounter {
+    position: fixed;
+    Width: 100%;
+    bottom: 0;
 }

@@ -1,15 +1,11 @@
 'use strict';
-debugger;
+// debugger;
 
-
-// helper functions
-//   - multiple browser support for requestFullScreen()
-//   - UUID generator
-// variables/constants
-// other functions
-// listeners.
-
-
+//////////////////////////////////////////////////////////////////
+//
+// Helpers and misc functions.
+// Would normally source from external libraries.
+//
 
 // multiple browser support.
 function launchIntoFullscreen(element) {
@@ -28,7 +24,7 @@ function launchIntoFullscreen(element) {
 // https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
 function uuidv4() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
 }
@@ -36,14 +32,40 @@ function uuidv4() {
 // Display a random product.
 // Will need the logic to review products already displayed and not repeat them per the rules.
 function displayThreeRandomProducts() {
+  roundNum += 1;
+  if (roundNum <= rounds) {
 
-  for (var i = 1; i <= 3; i++) {
-    var imageElementId = document.getElementById('image' + i);
-    var randomIndex = Math.floor(Math.random() * Product.allProducts.length);
-    imageElementId.src = Product.allProducts[randomIndex].filepath;
+    // delete the div at the end with id "roundCounter"
+    // add another div with a new "roundCounter"
+    var roundCounter = document.getElementById('roundCounter');
+    // survey is global
+    survey.removeChild(roundCounter);
+
+    roundCounter = document.createElement('div');
+    roundCounter.id = 'roundCounter';
+
+    var p = document.createElement('p');  
+    var roundText = document.createTextNode('Round ' + roundNum + ' of ' + rounds + '.'); 
+    p.appendChild(roundText);
+    roundCounter.appendChild(p);
+
+    survey.appendChild(roundCounter);
+    
+    for (var i = 1; i <= 3; i++) {
+      var imageElementId = document.getElementById('image' + i);
+      var randomIndex = Math.floor(Math.random() * Product.allProducts.length);
+      imageElementId.src = Product.allProducts[randomIndex].filepath;
+    }
+  } else {
+    alert('end of survey');
   }
 }
 
+
+//////////////////////////////////////////////////////////////////
+//
+// Variables and Contants
+//
 
 var startButton = document.getElementById('startButton');
 var prestart = document.getElementById('prestart');
@@ -52,17 +74,27 @@ var header = document.getElementById('header');
 var report = document.getElementById('report');
 var reinitializeData = document.getElementById('reinitializeData');
 var releaseTheHounds = document.getElementById('releaseTheHounds');
+
 //Product objects
 Product.allProducts = [];
 //Survey response objects
 Survey.allSurveys = [];
 
+const rounds = 4;
+var roundNum = 0;
+
+
+
+//////////////////////////////////////////////////////////////////
+//
+// Event listeners
+//
 startButton.addEventListener('click', function (e) {
   e.preventDefault();
   header.style.display = 'none';
   prestart.style.display = 'none';
   survey.style.display = 'flex';
-  launchIntoFullscreen(document.documentElement); // the whole page
+  // launchIntoFullscreen(document.documentElement); // the whole page
   displayThreeRandomProducts();
 });
 
@@ -80,7 +112,19 @@ releaseTheHounds.addEventListener('click', function (e) {
   // location.replace('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 });
 
+// add an event listener to each image element
+for (var i = 1; i <= 3; i++) {
+  var imageElementId = document.getElementById('image' + i);
+  imageElementId.addEventListener ('click', function(e){
+    // recordSelection();
+    displayThreeRandomProducts();
+  });
+}
 
+//////////////////////////////////////////////////////////////////
+//
+// Constructors
+//
 
 //Product constructor function
 function Product(filepath) {
@@ -96,7 +140,10 @@ function Survey(firstName) {
   Survey.allSurveys.push(this);
 }
 
-
+//////////////////////////////////////////////////////////////////
+//
+// IIFEs
+//
 (function initProducts() {
   new Product('img/bag.jpg');
   new Product('img/banana.jpg');

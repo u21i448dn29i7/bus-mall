@@ -1,1 +1,75 @@
 @import 'normalize.css';
+@import 'header.css';
+/* * {
+    border: 1px solid gray;
+} */
+
+html {
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
+    overflow: auto;
+}
+
+body {
+    /* background-image: url("../img/pexels-photo-459225.jpeg");   */
+    /* background-size: auto; */
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+ul {
+    text-decoration: underline;
+}
+
+ul li:hover {
+    background: #1c1c1c;
+    color: hotpink;  /* or whatever colour you want */
+}
+
+#prestart {
+    color: black;
+    height: 400px;
+    width: 50%;
+    margin: 50px auto;
+    padding: 10px;
+    justify-content: center;
+    border: 1px solid black;
+    background: white;
+    opacity: .9;
+    /* z-index: -1; */
+}
+
+#prestart-instruction {
+    display: table;
+    margin: 0 auto;
+}
+
+#prestart button {
+    margin: 40px auto;
+    height: 40px;
+    display: block;
+}
+
+#survey {
+    background-image: none;
+    display: none;
+    width: 100%;
+    height: auto;
+    margin: 50px auto;
+    padding: 10px;
+    position: relative;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+#survey article {
+    width: 450px;
+    padding: 0px;
+    margin: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    text-align: center;
+}
+
+#survey img {
+    width: 100%;
+}

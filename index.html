@@ -21,7 +21,7 @@
                     Report
                 </li>
                 <li id="reinitializeData">
-                    Reinitialize Data
+                    Reinitialize Universe
                 </li>
                 <li id="releaseTheHounds">
                     Release the Hounds
@@ -44,28 +44,28 @@
                 <em>can't live without.</em>
             </h2>
             <div id="roundCounter">
-                <!-- <p>Round Counter goes here.</p> -->
             </div>
         </section>
         <section id="prestart">
             <div id="prestart-instruction">
                 <h1>Instructions to Researcher</h1>
                 <p>
-                    Ensure the subject is comfortable and compliant and prepared to receive the messaging/survey.
+                    Collect the subjects name, then ensure they are comfortable, properly medicated, compliant and prepared to receive the survey/messaging.
                 </p>
                 <p>
                     When they are ready, press Start Survey and present them with the survey device.
                 </p>
-                <p>
-                    Form goes here.
-                </p>
-                <p>
-                    Form goes here.
-                </p>
+                <form>
+                    <fieldset>
+                        <legend>What is the subjects first name?</legend>
+                        <!-- <label for="name">First Name:</label> -->
+                        <input id="firstName" type="text" name="fistName" size="30" maxlength="100" required>
+                    </fieldset>
+                    <button id="startButton" class="button">
+                        Start Survey
+                    </button>
+                </form>
             </div>
-            <button id="startButton">
-                Start Survey
-            </button>
         </section>
     </main>
 

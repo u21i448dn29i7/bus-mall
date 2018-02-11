@@ -1,13 +1,13 @@
 'use strict';
-debugger;
+// debugger;
 
-//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 //
 // Helpers and misc functions.
 // Would normally source from external libraries.
 //
 
-// multiple browser support.
+// multiple browser support for requestFullScreen()
 function launchIntoFullscreen(element) {
   if (element.requestFullscreen) {
     element.requestFullscreen();
@@ -20,7 +20,7 @@ function launchIntoFullscreen(element) {
   }
 }
 
-// Weak, but 'close enough' UUID generator
+// Weak, but 'close enough' UUID generator for primary key of Survey objects
 // https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
 function uuidv4() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -30,16 +30,12 @@ function uuidv4() {
 }
 
 // Display a random product.
-// Will need the logic to review products already displayed and not repeat them per the rules.
 function displayThreeRandomProducts() {
   roundNum += 1;
   if (roundNum <= rounds) {
-    // delete the div at the end with id "roundCounter"
-    // add another div with a new "roundCounter"
+    // this creates a simple counter at the bottom of the survey page.
     var roundCounter = document.getElementById('roundCounter');
-    // survey is global
     survey.removeChild(roundCounter);
-
     roundCounter = document.createElement('div');
     roundCounter.id = 'roundCounter';
 
@@ -49,45 +45,73 @@ function displayThreeRandomProducts() {
     roundCounter.appendChild(p);
     survey.appendChild(roundCounter);
 
-
-    // start with the copy of the full product array then
-    // remove the products from the previous round.
+    // start with the clone of the full product array then
+    // remove the products from the previous round to create
+    // an availableProducts array.
     var availableProducts = Product.allProducts.slice();
 
     for (var pr = 0; pr < previousRound.length; pr++) {
       var index = availableProducts.indexOf(previousRound[pr]);
       availableProducts.splice(index, 1);
-      console.log('availableProductsArray: ' + availableProducts);
+      // console.log('availableProductsArray: ' + availableProducts);
     }
 
+    // reset previousRound array to support the current round
     previousRound = [];
-    // pick three images, remove the selected image from this round.
+
+    // pick three images
+    // remove the selected image from availableProducts so that it can't
+    // be reused in this round
     for (var i = 1; i <= 3; i++) {
+      // get the each image ID in the html
       var imageElementId = document.getElementById('image' + i);
 
+      // get a random object from the availableProducts array.
+      // set the filepath as the image src and set the name as the productId
+      // (ehhhhh...)
       var randomIndex = Math.floor(Math.random() * availableProducts.length);
       imageElementId.src = availableProducts[randomIndex].filepath;
+      imageElementId.name = availableProducts[randomIndex].productId;
+      
+      // clean up before moving on:
+      // - increment display count
+      // - add to previousRound array
+      // - remove from availableProducts so it doesn't repeat
+      availableProducts[randomIndex].displayCount += 1;
       previousRound.push(availableProducts[randomIndex]);
       availableProducts.splice(randomIndex,1);
     }
-
   } else {
     alert('end of survey');
+    location.reload();   // during testing, just reload the whole site
   }
 }
 
+function recordSelection(e) {
+  // into the current Survey object, push the round number, 
+  // the displayed products per each round, and the product selected
+  // into a multidimensional array for later tabulation.
 
-recordSelect(e) {
-  
+  // alert(e.target.name);
+  // selections.push(e.target.name);
+  // alert(selections);
+
+
+  for (var i = 1; i <= 3; i++) {
+    // get the each image ID in the html
+    var imageElementId = document.getElementById('image' + i);
+    // imageElementId.name;   //for images displayed
+
+  }
+
+
 }
 
-
-//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 //
-// Variables and Contants
+// Variables and Constants
 //
-
-var startButton = document.getElementById('startButton');
+// var start = document.getElementById('start');
 var prestart = document.getElementById('prestart');
 var survey = document.getElementById('survey');
 var header = document.getElementById('header');
@@ -101,18 +125,31 @@ Product.allProducts = [];
 Survey.allSurveys = [];
 // Previous round array. Will contain three objects.
 var previousRound = [];
+var selections = [];
 
-const rounds = 4;
+const rounds = 10;
 var roundNum = 0;
 
 
-
-//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 //
 // Event listeners
 //
-startButton.addEventListener('click', function (e) {
+var form = document.querySelector('form');
+
+form.addEventListener('submit', function (e) {
   e.preventDefault();
+  var firstName = form.elements.firstName.value;
+
+  if (!firstName) {
+    alert('Please provide the subjects first name?');
+  } else {
+    new Survey(firstName);
+    form.reset();
+  }
+
+  // hide the prestart and header then show the survey
+  // and switch to full screen
   header.style.display = 'none';
   prestart.style.display = 'none';
   survey.style.display = 'flex';
@@ -120,49 +157,64 @@ startButton.addEventListener('click', function (e) {
   displayThreeRandomProducts();
 });
 
+
 report.addEventListener('click', function (e) {
   alert('You clicked reports. \nSorry there are no reports yet.');
 });
 
 reinitializeData.addEventListener('click', function (e) {
-  alert('This will reset all survey data. \nAre you sure?');
+  alert('Are you sure you want to initiate a Big Crunch? \n\n\n(Don\'t panic. It just resets the survey data.)');
   location.reload();
 });
 
 releaseTheHounds.addEventListener('click', function (e) {
-  alert('Hounds released.');
-  // location.replace('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+  //alert('Hounds released.');
+  location.replace('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 });
 
 // add an event listener to each image element
 for (var i = 1; i <= 3; i++) {
   var imageElementId = document.getElementById('image' + i);
   imageElementId.addEventListener ('click', function(e){
+    e.preventDefault();
+
     recordSelection(e);
     displayThreeRandomProducts();
+
+    // // temp debugging output
+    // for (var temp = 0; temp < Product.allProducts.length; temp++) {
+    //   console.log('Product: ' + Product.allProducts[temp].filepath + ', Count:' + Product.allProducts[temp].displayCount);
+    // }
+
   });
 }
 
-//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 //
 // Constructors
 //
 
 //Product constructor function
 function Product(filepath) {
-    this.filepath = filepath;
-    this.productId = uuidv4();
-    Product.allProducts.push(this);
+  this.filepath = filepath;
+  this.productId = uuidv4();
+  this.displayCount = 0;
+  this.selectedCount = 0;
+  Product.allProducts.push(this);
 }
 
 //Survey response constructor function
 function Survey(firstName) {
+  this.surveyId = uuidv4();
   this.firstName = firstName;
-  this.ProductId = uuidv4();
+  this.round;
+  this.displayedProduct = [];
+  this.selectedProduct;
+  // this.product = Product.allProducts.slice();
   Survey.allSurveys.push(this);
 }
 
-//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 //
 // IIFEs
 //
@@ -185,5 +237,3 @@ function Survey(firstName) {
   new Product('img/water-can.jpg');
   new Product('img/usb.gif');
 })();
-
-

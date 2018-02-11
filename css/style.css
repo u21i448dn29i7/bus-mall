@@ -45,6 +45,10 @@ ul li:hover {
     margin: 0 auto;
 }
 
+form {
+    margin: 40px 0px 0px 0px;
+}
+
 #prestart button {
     margin: 40px auto;
     height: 40px;

@@ -1,5 +1,5 @@
 'use strict';
-// debugger;
+debugger;
 
 //////////////////////////////////////////////////////////
 //
@@ -30,7 +30,7 @@ function uuidv4() {
 }
 
 // Display a random product.
-function displayThreeRandomProducts() {
+function runSurveyRound() {
   roundNum += 1;
   if (roundNum <= rounds) {
     // this creates a simple counter at the bottom of the survey page.
@@ -67,11 +67,11 @@ function displayThreeRandomProducts() {
       var imageElementId = document.getElementById('image' + i);
 
       // get a random object from the availableProducts array.
-      // set the filepath as the image src and set the name as the productId
+      // set the filepath as the image src and set the name as the productName
       // (ehhhhh...)
       var randomIndex = Math.floor(Math.random() * availableProducts.length);
       imageElementId.src = availableProducts[randomIndex].filepath;
-      imageElementId.name = availableProducts[randomIndex].productId;
+      imageElementId.name = availableProducts[randomIndex].productName;
       
       // clean up before moving on:
       // - increment display count
@@ -83,29 +83,56 @@ function displayThreeRandomProducts() {
     }
   } else {
     alert('end of survey');
-    location.reload();   // during testing, just reload the whole site
+    displayReports();
+    // location.reload();   // during testing, just reload the whole site
   }
 }
 
-function recordSelection(e) {
-  // into the current Survey object, push the round number, 
-  // the displayed products per each round, and the product selected
-  // into a multidimensional array for later tabulation.
 
-  // alert(e.target.name);
-  // selections.push(e.target.name);
-  // alert(selections);
-
-
-  for (var i = 1; i <= 3; i++) {
-    // get the each image ID in the html
-    var imageElementId = document.getElementById('image' + i);
-    // imageElementId.name;   //for images displayed
-
+function displayReports() {
+  header.style.display = 'flex';
+  prestart.style.display = 'none';
+  survey.style.display = 'none';
+  resultsSectionID.style.display = 'block';
+  
+  var resultsUlElement = document.createElement('ul');
+  
+  for (var x = 0; x < Product.allProducts.length; x++) {
+    var liElement = document.createElement('li');
+    // 3 votes for the Banana Slicer
+    var text = Product.allProducts[x].selectedCount + ' votes for ' + Product.allProducts[x].productName; 
+    liElement.appendChild(document.createTextNode(text));
+    resultsUlElement.appendChild(liElement);
   }
 
+  resultsSectionID.appendChild(resultsUlElement);
 
 }
+
+
+// function recordSelection(e) {
+//   // into the current Survey object, push the round number, 
+//   // the displayed products per each round, and the product selected
+//   // into a multidimensional array for later tabulation.
+
+//   // alert(e.target.name);
+//   // selections.push(e.target.name);
+//   // alert(selections);
+
+//   // image1,image2,image3,selectedImaged
+
+//   var newArrayElement = [[]];
+
+//   for (var i = 1; i <= 3; i++) {
+//     // get the each image ID in the html
+//     var imageElementId = document.getElementById('image' + i);
+//     newArrayElement[roundNum-1].push(imageElementId.name);
+//   }
+
+//   //push the selected image last
+//   newArrayElement[roundNum-1].push(e.target.name);
+
+// }
 
 //////////////////////////////////////////////////////////
 //
@@ -116,8 +143,10 @@ var prestart = document.getElementById('prestart');
 var survey = document.getElementById('survey');
 var header = document.getElementById('header');
 var report = document.getElementById('report');
+var resultsSectionID = document.getElementById('resultsSection');
 var reinitializeData = document.getElementById('reinitializeData');
 var releaseTheHounds = document.getElementById('releaseTheHounds');
+
 
 //Product objects
 Product.allProducts = [];
@@ -154,12 +183,15 @@ form.addEventListener('submit', function (e) {
   prestart.style.display = 'none';
   survey.style.display = 'flex';
   // launchIntoFullscreen(document.documentElement); // the whole page
-  displayThreeRandomProducts();
+  runSurveyRound();
+
 });
 
 
 report.addEventListener('click', function (e) {
-  alert('You clicked reports. \nSorry there are no reports yet.');
+  // alert('You clicked reports. \nSorry there are no reports yet.');
+  document.getElementById(resultsSectionID).removeChild('ul');
+  displayReports();
 });
 
 reinitializeData.addEventListener('click', function (e) {
@@ -178,8 +210,15 @@ for (var i = 1; i <= 3; i++) {
   imageElementId.addEventListener ('click', function(e){
     e.preventDefault();
 
-    recordSelection(e);
-    displayThreeRandomProducts();
+    // recordSelection(e);    // this function, later, will tally responses from multiple subjects.
+
+    for (var ps = 0; ps < Product.allProducts.length; ps++) {
+      if (Product.allProducts[ps].productName === e.target.name) {
+        Product.allProducts[ps].selectedCount += 1;
+      }
+    }
+
+    runSurveyRound();
 
     // // temp debugging output
     // for (var temp = 0; temp < Product.allProducts.length; temp++) {
@@ -195,8 +234,9 @@ for (var i = 1; i <= 3; i++) {
 //
 
 //Product constructor function
-function Product(filepath) {
+function Product(filepath,productName) {
   this.filepath = filepath;
+  this.productName = productName;
   this.productId = uuidv4();
   this.displayCount = 0;
   this.selectedCount = 0;
@@ -219,21 +259,21 @@ function Survey(firstName) {
 // IIFEs
 //
 (function initProducts() {
-  new Product('img/bag.jpg');
-  new Product('img/banana.jpg');
-  new Product('img/bathroom.jpg');
-  new Product('img/boots.jpg');
-  new Product('img/breakfast.jpg');
-  new Product('img/bubblegum.jpg');
-  new Product('img/chair.jpg');
-  new Product('img/cthulhu.jpg');
-  new Product('img/dog-duck.jpg');
-  new Product('img/dragon.jpg');
-  new Product('img/pen.jpg');
-  new Product('img/pet-sweep.jpg');
-  new Product('img/tauntaun.jpg');
-  new Product('img/unicorn.jpg');
-  new Product('img/wine-glass.jpg');
-  new Product('img/water-can.jpg');
-  new Product('img/usb.gif');
+  new Product('img/bag.jpg', 'R2-D2 Travel Bag');
+  new Product('img/banana.jpg','Banana Slicer De-lux');
+  new Product('img/bathroom.jpg','iPad Holder');
+  new Product('img/boots.jpg', 'Rain Boots');
+  new Product('img/breakfast.jpg','Instamatic Breakfast Maker');
+  new Product('img/bubblegum.jpg','Bubblegum Flavored Meatballs');
+  new Product('img/chair.jpg','Super Comfy Char');
+  new Product('img/cthulhu.jpg','Monster Thing');
+  new Product('img/dog-duck.jpg','Quacker for Dogs');
+  new Product('img/dragon.jpg','Canned Dragon');
+  new Product('img/pen.jpg','Pen cap multi-tool');
+  new Product('img/pet-sweep.jpg','Pet torture device');
+  new Product('img/tauntaun.jpg','Goo-less tauntaun sleeping bag');
+  new Product('img/unicorn.jpg','Canned Unicorn');
+  new Product('img/wine-glass.jpg','Wine glass');
+  new Product('img/water-can.jpg','Water can');
+  new Product('img/usb.gif','USB Thumb drive with animatronics');
 })();

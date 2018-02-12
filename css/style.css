@@ -84,3 +84,8 @@ form {
     Width: 100%;
     bottom: 0;
 }
+
+#resultsSection {
+    display: none;
+}
+

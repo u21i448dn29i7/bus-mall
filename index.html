@@ -57,9 +57,11 @@
                 </p>
                 <form>
                     <fieldset>
-                        <legend>What is the subjects first name?</legend>
-                        <!-- <label for="name">First Name:</label> -->
+                        <legend>Let's get started</legend>
+                        <label for="firstName">First Name:</label>
                         <input id="firstName" type="text" name="fistName" size="30" maxlength="100" required>
+                        <label for="rounds">How many rounds?</label>
+                        <input id="rounds" type="number" name="rounds" min="0" max="25" value="25" required>
                     </fieldset>
                     <button id="startButton" class="button">
                         Start Survey

@@ -1,5 +1,6 @@
 @import 'normalize.css';
 @import 'header.css';
+
 /* * {
     border: 1px solid gray;
 } */
@@ -10,8 +11,6 @@ html {
 }
 
 body {
-    /* background-image: url("../img/pexels-photo-459225.jpeg");   */
-    /* background-size: auto; */
     background-size: 100%;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -24,7 +23,6 @@ ul {
 ul li:hover {
     background: #1c1c1c;
     color: hotpink;
-    /* or whatever colour you want */
 }
 
 #prestart {
@@ -37,7 +35,6 @@ ul li:hover {
     border: 1px solid black;
     background: white;
     opacity: .9;
-    /* z-index: -1; */
 }
 
 #prestart-instruction {
@@ -68,7 +65,7 @@ form {
 }
 
 #survey article {
-    width: 450px;
+    width: 350px;
     padding: 0px;
     margin: 20px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -87,5 +84,14 @@ form {
 
 #resultsSection {
     display: none;
+    
 }
 
+#resultsSection ul {
+    text-decoration: none;
+}
+
+#resultsSection ul li:hover {
+    background: white;
+    color: black;
+}

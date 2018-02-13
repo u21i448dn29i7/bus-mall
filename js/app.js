@@ -50,8 +50,8 @@ function runSurveyRound() {
     // an availableProducts array.
     var availableProducts = Product.allProducts.slice();
 
-    for (var pr = 0; pr < previousRound.length; pr++) {
-      var index = availableProducts.indexOf(previousRound[pr]);
+    for (let i = 0; i < previousRound.length; i++) {
+      var index = availableProducts.indexOf(previousRound[i]);
       availableProducts.splice(index, 1);
       // console.log('availableProductsArray: ' + availableProducts);
     }
@@ -62,7 +62,7 @@ function runSurveyRound() {
     // pick three images
     // remove the selected image from availableProducts so that it can't
     // be reused in this round
-    for (var i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 3; i++) {
       // get the each image ID in the html
       var imageElementId = document.getElementById('image' + i);
 
@@ -97,10 +97,10 @@ function displayReports() {
   
   var resultsUlElement = document.createElement('ul');
   
-  for (var x = 0; x < Product.allProducts.length; x++) {
+  for (let i = 0; i < Product.allProducts.length; i++) {
     var liElement = document.createElement('li');
     // 3 votes for the Banana Slicer
-    var text = Product.allProducts[x].selectedCount + ' votes for ' + Product.allProducts[x].productName; 
+    var text = Product.allProducts[i].selectedCount + ' votes for ' + Product.allProducts[i].productName; 
     liElement.appendChild(document.createTextNode(text));
     resultsUlElement.appendChild(liElement);
   }
@@ -123,7 +123,7 @@ function displayReports() {
 
 //   var newArrayElement = [[]];
 
-//   for (var i = 1; i <= 3; i++) {
+//   for (let i = 1; i <= 3; i++) {
 //     // get the each image ID in the html
 //     var imageElementId = document.getElementById('image' + i);
 //     newArrayElement[roundNum-1].push(imageElementId.name);
@@ -156,7 +156,7 @@ Survey.allSurveys = [];
 var previousRound = [];
 var selections = [];
 
-const rounds = 10;
+var rounds = 0;
 var roundNum = 0;
 
 
@@ -169,6 +169,7 @@ var form = document.querySelector('form');
 form.addEventListener('submit', function (e) {
   e.preventDefault();
   var firstName = form.elements.firstName.value;
+  rounds = form.elements.rounds.value;
 
   if (!firstName) {
     alert('Please provide the subjects first name?');
@@ -212,9 +213,9 @@ for (var i = 1; i <= 3; i++) {
 
     // recordSelection(e);    // this function, later, will tally responses from multiple subjects.
 
-    for (var ps = 0; ps < Product.allProducts.length; ps++) {
-      if (Product.allProducts[ps].productName === e.target.name) {
-        Product.allProducts[ps].selectedCount += 1;
+    for (let i = 0; i < Product.allProducts.length; i++) {
+      if (Product.allProducts[i].productName === e.target.name) {
+        Product.allProducts[i].selectedCount += 1;
       }
     }
 

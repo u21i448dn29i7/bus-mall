@@ -30,24 +30,28 @@
         </nav>
     </header>
     <main>
-        <section id="survey">
-            <article>
-                <img id="image1">
-            </article>
-            <article>
-                <img id="image2">
-            </article>
-            <article>
-                <img id="image3">
-            </article>
-            <h2>Pick your favorite of these three products that you
-                <em>can't live without.</em>
-            </h2>
+        <section id="surveySection">
+            <ul>
+                <li>
+                    <div id="image1" class="productDisplay"></div>
+                </li>
+                <li>
+                    <div id="image2" class="productDisplay"></div>
+                </li>
+                <li>
+                    <div id="image3" class="productDisplay"></div>
+                </li>
+            </ul>
+            <div>
+                <h2>Pick your favorite of these three products that you
+                    <em>can't live without.</em>
+                </h2>
+            </div>
             <div id="roundCounter">
             </div>
         </section>
-        <section id="prestart">
-            <div id="prestart-instruction">
+        <section id="prestartSection">
+            <div id="prestartSection-instruction">
                 <h1>Instructions to Researcher</h1>
                 <p>
                     Collect the subjects name, then ensure they are comfortable, properly medicated, compliant and prepared to receive the survey/messaging.
@@ -58,9 +62,9 @@
                 <form>
                     <fieldset>
                         <legend>Let's get started</legend>
-                        <label for="firstName">First Name:</label>
+                        <label for="firstName">Subject's First Name:</label>
                         <input id="firstName" type="text" name="fistName" size="30" maxlength="100" required>
-                        <label for="rounds">How many rounds?</label>
+                        <label for="rounds">How many rounds (1-25)?</label>
                         <input id="rounds" type="number" name="rounds" min="0" max="25" value="25" required>
                     </fieldset>
                     <button id="startButton" class="button">

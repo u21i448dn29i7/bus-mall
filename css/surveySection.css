@@ -1,0 +1,53 @@
+#surveySection {
+    display: none;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+#surveySection ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+#surveySection li {
+    display: inline-block;
+    width: 32%;
+    margin: auto;
+    text-align: left;
+    
+}
+
+.productDisplay {
+    box-sizing: border-box;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding: 4px;
+    background: url() 50% 50% no-repeat;
+    background-size: cover;
+    background-clip: content-box;
+}
+
+.productDisplay:before {
+    display: block;
+    content: "";
+    padding-top: 75%;
+}
+
+#surveySection h2 {
+    display: block;
+    text-align: center;
+}
+
+#roundCounter {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+

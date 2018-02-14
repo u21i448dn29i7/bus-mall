@@ -14,6 +14,6 @@
 ## The developer
 
 1. As a developer I want the app to work flawlessly, on any landscape device similar to the 9.7" iPad, equiv, or larger, manufactured between 2016 and 2018. Same for browsers. No old, crappy browser support.
-1. As a developer create a three "slide" application that does not ever reload the page. Prestart, Survey Reports should all be presented by using display:none or proper display to 'hide/unhide'.
+1. As a developer create a three "slide" application that does not ever reload the page. prestartSectionId, Survey Reports should all be presented by using display:none or proper display to 'hide/unhide'.
 1. As a developer, I'll use normalize.css rather than reset.css to ensure better browser support.
 1. STRETCH: As a developer I want the application to be a single page web app, served from an S3 bucket, authenticated with AWS Cognito (for the researchers), and all data stored in the Dynamo.

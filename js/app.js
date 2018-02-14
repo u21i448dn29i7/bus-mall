@@ -23,8 +23,9 @@ function launchIntoFullscreen(element) {
 // Weak, but 'close enough' UUID generator for primary key of Survey objects
 // https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
 function uuidv4() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0,
+      v = c === 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
 }
@@ -35,15 +36,15 @@ function runSurveyRound() {
   if (roundNum <= rounds) {
     // this creates a simple counter at the bottom of the survey page.
     var roundCounter = document.getElementById('roundCounter');
-    survey.removeChild(roundCounter);
+    surveySectionId.removeChild(roundCounter);
     roundCounter = document.createElement('div');
     roundCounter.id = 'roundCounter';
 
-    var p = document.createElement('p');  
-    var roundText = document.createTextNode('Round ' + roundNum + ' of ' + rounds + '.'); 
+    var p = document.createElement('p');
+    var roundText = document.createTextNode('Round ' + roundNum + ' of ' + rounds + '.');
     p.appendChild(roundText);
     roundCounter.appendChild(p);
-    survey.appendChild(roundCounter);
+    surveySectionId.appendChild(roundCounter);
 
     // start with the clone of the full product array then
     // remove the products from the previous round to create
@@ -64,25 +65,37 @@ function runSurveyRound() {
     // be reused in this round
     for (let i = 1; i <= 3; i++) {
       // get the each image ID in the html
-      var imageElementId = document.getElementById('image' + i);
+      var surveySectionDivElementId = document.getElementById('image' + i);
+
+
+
 
       // get a random object from the availableProducts array.
       // set the filepath as the image src and set the name as the productName
       // (ehhhhh...)
+      // "background-image:url('http://placehold.it/1024x768')"
+
       var randomIndex = Math.floor(Math.random() * availableProducts.length);
-      imageElementId.src = availableProducts[randomIndex].filepath;
-      imageElementId.name = availableProducts[randomIndex].productName;
-      
+      // surveySectionDivElementId.style = 'background-image:url(\'' + availableProducts[randomIndex].filepath + '\')"';
+      surveySectionDivElementId.style.backgroundImage = 'url(\'' + availableProducts[randomIndex].filepath + '\')';
+      surveySectionDivElementId.name = availableProducts[randomIndex].productName;
+
       // clean up before moving on:
       // - increment display count
       // - add to previousRound array
       // - remove from availableProducts so it doesn't repeat
       availableProducts[randomIndex].displayCount += 1;
       previousRound.push(availableProducts[randomIndex]);
-      availableProducts.splice(randomIndex,1);
+      availableProducts.splice(randomIndex, 1);
     }
   } else {
-    alert('end of survey');
+    // remove listeners
+    for (let i = 1; i <= 3; i++) {
+      // get the each image ID in the html
+      surveySectionDivElementId = document.getElementById('image' + i);
+      surveySectionDivElementId.removeEventListener('click',handleProductSelection);
+    }
+    // alert('end of survey');
     displayReports();
     // location.reload();   // during testing, just reload the whole site
   }
@@ -91,16 +104,16 @@ function runSurveyRound() {
 
 function displayReports() {
   header.style.display = 'flex';
-  prestart.style.display = 'none';
-  survey.style.display = 'none';
+  prestartSectionId.style.display = 'none';
+  surveySectionId.style.display = 'none';
   resultsSectionID.style.display = 'block';
-  
+
   var resultsUlElement = document.createElement('ul');
-  
+
   for (let i = 0; i < Product.allProducts.length; i++) {
     var liElement = document.createElement('li');
-    // 3 votes for the Banana Slicer
-    var text = Product.allProducts[i].selectedCount + ' votes for ' + Product.allProducts[i].productName; 
+    // * 3 votes for the Banana Slicer
+    var text = Product.allProducts[i].selectedCount + ' votes for ' + Product.allProducts[i].productName;
     liElement.appendChild(document.createTextNode(text));
     resultsUlElement.appendChild(liElement);
   }
@@ -125,8 +138,8 @@ function displayReports() {
 
 //   for (let i = 1; i <= 3; i++) {
 //     // get the each image ID in the html
-//     var imageElementId = document.getElementById('image' + i);
-//     newArrayElement[roundNum-1].push(imageElementId.name);
+//     var surveySectionDivElementId = document.getElementById('image' + i);
+//     newArrayElement[roundNum-1].push(surveySectionDivElementId.name);
 //   }
 
 //   //push the selected image last
@@ -139,8 +152,8 @@ function displayReports() {
 // Variables and Constants
 //
 // var start = document.getElementById('start');
-var prestart = document.getElementById('prestart');
-var survey = document.getElementById('survey');
+var prestartSectionId = document.getElementById('prestartSection');
+var surveySectionId = document.getElementById('surveySection');
 var header = document.getElementById('header');
 var report = document.getElementById('report');
 var resultsSectionID = document.getElementById('resultsSection');
@@ -154,7 +167,7 @@ Product.allProducts = [];
 Survey.allSurveys = [];
 // Previous round array. Will contain three objects.
 var previousRound = [];
-var selections = [];
+// var selections = [];
 
 var rounds = 0;
 var roundNum = 0;
@@ -178,11 +191,11 @@ form.addEventListener('submit', function (e) {
     form.reset();
   }
 
-  // hide the prestart and header then show the survey
+  // hide the prestartSectionId and header then show the survey
   // and switch to full screen
   header.style.display = 'none';
-  prestart.style.display = 'none';
-  survey.style.display = 'flex';
+  prestartSectionId.style.display = 'none';
+  surveySectionId.style.display = 'block';
   // launchIntoFullscreen(document.documentElement); // the whole page
   runSurveyRound();
 
@@ -205,28 +218,31 @@ releaseTheHounds.addEventListener('click', function (e) {
   location.replace('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 });
 
+
 // add an event listener to each image element
 for (var i = 1; i <= 3; i++) {
-  var imageElementId = document.getElementById('image' + i);
-  imageElementId.addEventListener ('click', function(e){
-    e.preventDefault();
+  var surveySectionDivElementId = document.getElementById('image' + i);
+  surveySectionDivElementId.addEventListener('click', handleProductSelection);
+}
 
-    // recordSelection(e);    // this function, later, will tally responses from multiple subjects.
+function handleProductSelection(e) {
+  e.preventDefault();
 
-    for (let i = 0; i < Product.allProducts.length; i++) {
-      if (Product.allProducts[i].productName === e.target.name) {
-        Product.allProducts[i].selectedCount += 1;
-      }
+  // recordSelection(e);    // this function, later, will tally responses from multiple subjects.
+
+  for (let i = 0; i < Product.allProducts.length; i++) {
+    if (Product.allProducts[i].productName === e.target.name) {
+      Product.allProducts[i].selectedCount += 1;
     }
+  }
 
-    runSurveyRound();
+  runSurveyRound();
 
-    // // temp debugging output
-    // for (var temp = 0; temp < Product.allProducts.length; temp++) {
-    //   console.log('Product: ' + Product.allProducts[temp].filepath + ', Count:' + Product.allProducts[temp].displayCount);
-    // }
+  // // temp debugging output
+  // for (var temp = 0; temp < Product.allProducts.length; temp++) {
+  //   console.log('Product: ' + Product.allProducts[temp].filepath + ', Count:' + Product.allProducts[temp].displayCount);
+  // }
 
-  });
 }
 
 //////////////////////////////////////////////////////////
@@ -235,7 +251,7 @@ for (var i = 1; i <= 3; i++) {
 //
 
 //Product constructor function
-function Product(filepath,productName) {
+function Product(filepath, productName) {
   this.filepath = filepath;
   this.productName = productName;
   this.productId = uuidv4();
@@ -251,7 +267,6 @@ function Survey(firstName) {
   this.round;
   this.displayedProduct = [];
   this.selectedProduct;
-  // this.product = Product.allProducts.slice();
   Survey.allSurveys.push(this);
 }
 
@@ -261,20 +276,20 @@ function Survey(firstName) {
 //
 (function initProducts() {
   new Product('img/bag.jpg', 'R2-D2 Travel Bag');
-  new Product('img/banana.jpg','Banana Slicer De-lux');
-  new Product('img/bathroom.jpg','iPad Holder');
+  new Product('img/banana.jpg', 'Banana Slicer De-lux');
+  new Product('img/bathroom.jpg', 'iPad Holder');
   new Product('img/boots.jpg', 'Rain Boots');
-  new Product('img/breakfast.jpg','Instamatic Breakfast Maker');
-  new Product('img/bubblegum.jpg','Bubblegum Flavored Meatballs');
-  new Product('img/chair.jpg','Super Comfy Char');
-  new Product('img/cthulhu.jpg','Monster Thing');
-  new Product('img/dog-duck.jpg','Quacker for Dogs');
-  new Product('img/dragon.jpg','Canned Dragon');
-  new Product('img/pen.jpg','Pen cap multi-tool');
-  new Product('img/pet-sweep.jpg','Pet torture device');
-  new Product('img/tauntaun.jpg','Goo-less tauntaun sleeping bag');
-  new Product('img/unicorn.jpg','Canned Unicorn');
-  new Product('img/wine-glass.jpg','Wine glass');
-  new Product('img/water-can.jpg','Water can');
-  new Product('img/usb.gif','USB Thumb drive with animatronics');
+  new Product('img/breakfast.jpg', 'Instamatic Breakfast Maker');
+  new Product('img/bubblegum.jpg', 'Bubblegum Flavored Meatballs');
+  new Product('img/chair.jpg', 'Super Comfy Char');
+  new Product('img/cthulhu.jpg', 'Monster Thing');
+  new Product('img/dog-duck.jpg', 'Quacker for Dogs');
+  new Product('img/dragon.jpg', 'Canned Dragon');
+  new Product('img/pen.jpg', 'Pen cap multi-tool');
+  new Product('img/pet-sweep.jpg', 'Pet torture device');
+  new Product('img/tauntaun.jpg', 'Goo-less tauntaun sleeping bag');
+  new Product('img/unicorn.jpg', 'Canned Unicorn');
+  new Product('img/wine-glass.jpg', 'Wine glass');
+  new Product('img/water-can.jpg', 'Water can');
+  new Product('img/usb.gif', 'USB Thumb drive with animatronics');
 })();

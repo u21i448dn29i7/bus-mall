@@ -1,13 +1,12 @@
 #prestartSection {
     color: black;
-    height: 400px;
+    height: 100%;
     width: 50%;
     margin: 50px auto;
     padding: 10px;
     justify-content: center;
-    border: 1px solid black;
     background: white;
-    opacity: .9;
+    /* opacity: .9; */
 }
 
 #prestartSection-instruction {

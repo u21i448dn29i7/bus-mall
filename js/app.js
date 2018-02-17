@@ -1,5 +1,5 @@
 'use strict';
-debugger;
+// debugger;
 
 //////////////////////////////////////////////////////////
 //
@@ -20,6 +20,22 @@ function launchIntoFullscreen(element) {
   }
 }
 
+function exitFromFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+}
+
+// a function to improve rounding
+function round(value, precision) {
+  var factor = Math.pow(10, precision);
+  return Math.round(value * factor) / factor;
+}
+
 // Weak, but 'close enough' UUID generator for primary key of Survey objects
 // https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
 function uuidv4() {
@@ -34,7 +50,7 @@ function uuidv4() {
 function runSurveyRound() {
   roundNum += 1;
   if (roundNum <= rounds) {
-    // this creates a simple counter at the bottom of the survey page.
+    // creates a counter at the bottom of the survey page.
     var roundCounter = document.getElementById('roundCounter');
     surveySectionId.removeChild(roundCounter);
     roundCounter = document.createElement('div');
@@ -46,44 +62,28 @@ function runSurveyRound() {
     roundCounter.appendChild(p);
     surveySectionId.appendChild(roundCounter);
 
-    // start with the clone of the full product array then
-    // remove the products from the previous round to create
-    // an availableProducts array.
+    // clone the product array then remove products 
+    // from the previous round
     var availableProducts = Product.allProducts.slice();
 
     for (let i = 0; i < previousRound.length; i++) {
       var index = availableProducts.indexOf(previousRound[i]);
       availableProducts.splice(index, 1);
-      // console.log('availableProductsArray: ' + availableProducts);
     }
 
     // reset previousRound array to support the current round
     previousRound = [];
 
-    // pick three images
-    // remove the selected image from availableProducts so that it can't
-    // be reused in this round
+    // pick three images and remove the selected image from availableProducts
     for (let i = 1; i <= 3; i++) {
-      // get the each image ID in the html
       var surveySectionDivElementId = document.getElementById('image' + i);
 
-
-
-
-      // get a random object from the availableProducts array.
-      // set the filepath as the image src and set the name as the productName
-      // (ehhhhh...)
-      // "background-image:url('http://placehold.it/1024x768')"
-
+      // get a random product and set it's image as the div background
       var randomIndex = Math.floor(Math.random() * availableProducts.length);
-      // surveySectionDivElementId.style = 'background-image:url(\'' + availableProducts[randomIndex].filepath + '\')"';
       surveySectionDivElementId.style.backgroundImage = 'url(\'' + availableProducts[randomIndex].filepath + '\')';
       surveySectionDivElementId.name = availableProducts[randomIndex].productName;
 
       // clean up before moving on:
-      // - increment display count
-      // - add to previousRound array
-      // - remove from availableProducts so it doesn't repeat
       availableProducts[randomIndex].displayCount += 1;
       previousRound.push(availableProducts[randomIndex]);
       availableProducts.splice(randomIndex, 1);
@@ -93,81 +93,127 @@ function runSurveyRound() {
     for (let i = 1; i <= 3; i++) {
       // get the each image ID in the html
       surveySectionDivElementId = document.getElementById('image' + i);
-      surveySectionDivElementId.removeEventListener('click',handleProductSelection);
+      surveySectionDivElementId.removeEventListener('click', handleProductSelection);
     }
-    // alert('end of survey');
+    // end of survey
+    exitFromFullscreen();
+    generatePercentageSelected();
+
+    var strAllProducts = JSON.stringify(Product.allProducts);
+    localStorage.setItem('allProducts', strAllProducts);
+
     displayReports();
-    // location.reload();   // during testing, just reload the whole site
   }
 }
 
+function makeChart() {
+  var sortedResults = Product.allProducts.slice();
+
+  // ORDER BY selectedCount DESC
+  sortedResults.sort(function (a, b) {
+    return a.selectedCount - b.selectedCount;
+  });
+  sortedResults.reverse();
+
+  var labels = [];
+  for (let i = 0; i < sortedResults.length; i++) {
+    labels.push(sortedResults[i].productName);
+  }
+
+  var data = [];
+  for (let i = 0; i < sortedResults.length; i++) {
+    data.push(sortedResults[i].selectedCount);
+  }
+
+  var context = document.getElementById('barChartsAreBoring').getContext('2d');
+  var barChartsAreBoring = new Chart(context, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Product Votes',
+        data: data,
+        backgroundColor: palette('rainbow', sortedResults.length).map(function (hex) {
+          return '#' + hex;
+        })
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true,
+            stepSize : 1
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            autoSkip: false
+          }
+        }]
+      }
+    }
+  });
+}
+
+function generatePercentageSelected() {
+  for (let i = 0; i < Product.allProducts.length; i++) {
+
+    var numerator = Product.allProducts[i].selectedCount;
+    var denominator = Product.allProducts[i].displayCount;
+
+    if (denominator > 0) {
+      Product.allProducts[i].percentageSelectedOfTotalDisplayed = round(((numerator / denominator) * 100), 2);
+    } else {
+      Product.allProducts[i].percentageSelectedOfTotalDisplayed = 0;
+    }
+  }
+}
 
 function displayReports() {
-  header.style.display = 'flex';
+  headerId.style.display = 'flex';
   prestartSectionId.style.display = 'none';
   surveySectionId.style.display = 'none';
   resultsSectionID.style.display = 'block';
 
   var resultsUlElement = document.createElement('ul');
 
+  // ORDER BY percentageSelectedOfTotalDisplayed DESC
+  Product.allProducts.sort(function (a, b) {
+    return a.percentageSelectedOfTotalDisplayed - b.percentageSelectedOfTotalDisplayed;
+  });
+  Product.allProducts.reverse();
+
+
   for (let i = 0; i < Product.allProducts.length; i++) {
     var liElement = document.createElement('li');
-    // * 3 votes for the Banana Slicer
-    var text = Product.allProducts[i].selectedCount + ' votes for ' + Product.allProducts[i].productName;
+    var text = Product.allProducts[i].productName + ' displayed ' + Product.allProducts[i].displayCount + ' times with ' + Product.allProducts[i].selectedCount + ' votes. (' + Product.allProducts[i].percentageSelectedOfTotalDisplayed + '%)';
     liElement.appendChild(document.createTextNode(text));
     resultsUlElement.appendChild(liElement);
   }
 
   resultsSectionID.appendChild(resultsUlElement);
-
+  makeChart();
 }
-
-
-// function recordSelection(e) {
-//   // into the current Survey object, push the round number, 
-//   // the displayed products per each round, and the product selected
-//   // into a multidimensional array for later tabulation.
-
-//   // alert(e.target.name);
-//   // selections.push(e.target.name);
-//   // alert(selections);
-
-//   // image1,image2,image3,selectedImaged
-
-//   var newArrayElement = [[]];
-
-//   for (let i = 1; i <= 3; i++) {
-//     // get the each image ID in the html
-//     var surveySectionDivElementId = document.getElementById('image' + i);
-//     newArrayElement[roundNum-1].push(surveySectionDivElementId.name);
-//   }
-
-//   //push the selected image last
-//   newArrayElement[roundNum-1].push(e.target.name);
-
-// }
 
 //////////////////////////////////////////////////////////
 //
 // Variables and Constants
 //
-// var start = document.getElementById('start');
+var headerId = document.getElementById('header');
 var prestartSectionId = document.getElementById('prestartSection');
 var surveySectionId = document.getElementById('surveySection');
-var header = document.getElementById('header');
-var report = document.getElementById('report');
 var resultsSectionID = document.getElementById('resultsSection');
+
+var report = document.getElementById('report');
+var start = document.getElementById('start');
 var reinitializeData = document.getElementById('reinitializeData');
 var releaseTheHounds = document.getElementById('releaseTheHounds');
 
 
-//Product objects
 Product.allProducts = [];
-//Survey response objects
 Survey.allSurveys = [];
-// Previous round array. Will contain three objects.
 var previousRound = [];
-// var selections = [];
 
 var rounds = 0;
 var roundNum = 0;
@@ -191,25 +237,26 @@ form.addEventListener('submit', function (e) {
     form.reset();
   }
 
-  // hide the prestartSectionId and header then show the survey
-  // and switch to full screen
-  header.style.display = 'none';
+  headerId.style.display = 'none';
   prestartSectionId.style.display = 'none';
   surveySectionId.style.display = 'block';
-  // launchIntoFullscreen(document.documentElement); // the whole page
+  launchIntoFullscreen(document.documentElement); // the whole page
   runSurveyRound();
 
 });
 
 
+start.addEventListener('click', function (e) {
+  location.reload();
+});
+
 report.addEventListener('click', function (e) {
-  // alert('You clicked reports. \nSorry there are no reports yet.');
-  document.getElementById(resultsSectionID).removeChild('ul');
   displayReports();
 });
 
 reinitializeData.addEventListener('click', function (e) {
-  alert('Are you sure you want to initiate a Big Crunch? \n\n\n(Don\'t panic. It just resets the survey data.)');
+  alert('Are you sure you want to initiate a Big Crunch? \nThis universe will be destroyed.\n\n\n(Don\'t panic. It just resets the survey data.)');
+  localStorage.clear();
   location.reload();
 });
 
@@ -228,8 +275,6 @@ for (var i = 1; i <= 3; i++) {
 function handleProductSelection(e) {
   e.preventDefault();
 
-  // recordSelection(e);    // this function, later, will tally responses from multiple subjects.
-
   for (let i = 0; i < Product.allProducts.length; i++) {
     if (Product.allProducts[i].productName === e.target.name) {
       Product.allProducts[i].selectedCount += 1;
@@ -237,12 +282,6 @@ function handleProductSelection(e) {
   }
 
   runSurveyRound();
-
-  // // temp debugging output
-  // for (var temp = 0; temp < Product.allProducts.length; temp++) {
-  //   console.log('Product: ' + Product.allProducts[temp].filepath + ', Count:' + Product.allProducts[temp].displayCount);
-  // }
-
 }
 
 //////////////////////////////////////////////////////////
@@ -257,6 +296,7 @@ function Product(filepath, productName) {
   this.productId = uuidv4();
   this.displayCount = 0;
   this.selectedCount = 0;
+  this.percentageSelectedOfTotalDisplayed = 0;
   Product.allProducts.push(this);
 }
 
@@ -275,21 +315,27 @@ function Survey(firstName) {
 // IIFEs
 //
 (function initProducts() {
-  new Product('img/bag.jpg', 'R2-D2 Travel Bag');
-  new Product('img/banana.jpg', 'Banana Slicer De-lux');
-  new Product('img/bathroom.jpg', 'iPad Holder');
-  new Product('img/boots.jpg', 'Rain Boots');
-  new Product('img/breakfast.jpg', 'Instamatic Breakfast Maker');
-  new Product('img/bubblegum.jpg', 'Bubblegum Flavored Meatballs');
-  new Product('img/chair.jpg', 'Super Comfy Char');
-  new Product('img/cthulhu.jpg', 'Monster Thing');
-  new Product('img/dog-duck.jpg', 'Quacker for Dogs');
-  new Product('img/dragon.jpg', 'Canned Dragon');
-  new Product('img/pen.jpg', 'Pen cap multi-tool');
-  new Product('img/pet-sweep.jpg', 'Pet torture device');
-  new Product('img/tauntaun.jpg', 'Goo-less tauntaun sleeping bag');
-  new Product('img/unicorn.jpg', 'Canned Unicorn');
-  new Product('img/wine-glass.jpg', 'Wine glass');
-  new Product('img/water-can.jpg', 'Water can');
-  new Product('img/usb.gif', 'USB Thumb drive with animatronics');
+  if (localStorage.allProducts) {
+    var strAllProducts = localStorage.getItem('allProducts');
+    Product.allProducts = JSON.parse(strAllProducts);
+    console.log(Product.allProducts);
+  } else {
+    new Product('img/bag.jpg', 'R2-D2 Travel Bag');
+    new Product('img/banana.jpg', 'Banana Slicer De-lux');
+    new Product('img/bathroom.jpg', 'iPad Holder');
+    new Product('img/boots.jpg', 'Rain Boots');
+    new Product('img/breakfast.jpg', 'Instamatic Breakfast Maker');
+    new Product('img/bubblegum.jpg', 'Bubblegum Flavored Meatballs');
+    new Product('img/chair.jpg', 'Super Comfy Char');
+    new Product('img/cthulhu.jpg', 'Monster Thing');
+    new Product('img/dog-duck.jpg', 'Quacker for Dogs');
+    new Product('img/dragon.jpg', 'Canned Dragon');
+    new Product('img/pen.jpg', 'Pen cap multi-tool');
+    new Product('img/pet-sweep.jpg', 'Pet torture device');
+    new Product('img/tauntaun.jpg', 'Goo-less tauntaun sleeping bag');
+    new Product('img/unicorn.jpg', 'Canned Unicorn');
+    new Product('img/wine-glass.jpg', 'Wine glass');
+    new Product('img/water-can.jpg', 'Water can');
+    new Product('img/usb.gif', 'USB Thumb drive with animatronics');
+  }
 })();

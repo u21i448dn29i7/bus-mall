@@ -25,5 +25,6 @@ fieldset input {
 #prestartSection button {
     margin: 40px auto;
     height: 40px;
+    width: 100%;
     display: block;
 }

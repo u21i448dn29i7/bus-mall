@@ -1,0 +1,30 @@
+#prestartSection {
+    color: black;
+    height: 100%;
+    width: 50%;
+    margin: 50px auto;
+    padding: 10px;
+    justify-content: center;
+    background: white;
+    /* opacity: .9; */
+}
+
+#prestartSection-instruction {
+    display: table;
+    margin: 0 auto;
+}
+
+form {
+    margin: 40px 0px 0px 0px;
+}
+
+fieldset input {
+    width: 100%;
+}
+
+#prestartSection button {
+    margin: 40px auto;
+    height: 40px;
+    width: 100%;
+    display: block;
+}

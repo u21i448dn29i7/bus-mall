@@ -1,0 +1,12 @@
+#resultsSection {
+    display: none;
+}
+
+#resultsSection ul {
+    text-decoration: none;
+}
+
+#resultsSection ul li:hover {
+    background: white;
+    color: black;
+}

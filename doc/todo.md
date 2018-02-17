@@ -6,10 +6,10 @@ The objective here is to create a functional "comprehensive" that will be used t
 
 ~~start with an empty framework (201n10-Framework)~~
 ~~add a basic header and main~~
-~~add two sections, one for the survey and one for the prestart instructions~~
+~~add two sections, one for the survey and one for the prestartSectionId instructions~~
 ~~add 3 images (not random) to the survey and style to with approximate cookie-stand shop page theme.~~
-~~add some boilerplate html to the prestart section. a form, some yadda yadda text~
-~~add some javascript to hide the prestart and display the survey sections~~
+~~add some boilerplate html to the prestartSectionId section. a form, some yadda yadda text~
+~~add some javascript to hide the prestartSectionId and display the survey sections~~
 ~~add some javascript for the "links" in the header since we won't be using any anchors~~
 make the survey article clickable, not the image. or make the image fit the box (see Images Scaling below)
 
@@ -18,7 +18,7 @@ make the survey article clickable, not the image. or make the image fit the box 
 ~~add random function to select three images conforming to specifications~~
 add Survey constructor to collect image display and selection data from multiple subjects.
 
-## Add the form to the researcher prestart section
+## Add the form to the researcher prestartSectionId section
 
 ~~Collect a participants name and generate a GUID to uniquely identify the user in the reports.~~
 

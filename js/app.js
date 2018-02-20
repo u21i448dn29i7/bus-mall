@@ -297,6 +297,7 @@ function Product(filepath, productName) {
   this.displayCount = 0;
   this.selectedCount = 0;
   this.percentageSelectedOfTotalDisplayed = 0;
+  this.test = true;
   Product.allProducts.push(this);
 }
 
